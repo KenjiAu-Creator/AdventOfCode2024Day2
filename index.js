@@ -21,7 +21,9 @@ function checkReports(filePath = "./adventDay2Input.txt") {
         const reportsArr = reports.split("\n");
 
         for(const report of reportsArr) {
-            if(isSafeReport(report)) numberOfSafeReports++;
+            if(isSafeReport(report, true)) {
+                numberOfSafeReports++;
+            }
         }
     }
 
@@ -36,10 +38,11 @@ function checkReports(filePath = "./adventDay2Input.txt") {
  *   Any two adjacent levels differ by at least one and at most three.
  *
  * @param {string} report string containing numbers of the report that indicate the levels of the report
+ * @param {boolean} dampener flag to indicate whether to use the problem dampener that will allow for a single bad level in a report to be marked as safe
  *
  * @returns {boolean} Returns true if the report is safe and false otherwise
  */
-function isSafeReport(report) {
+function isSafeReport(report, dampener = false) {
     const levels = report.split(" ");
     const numOfLevels = levels.length;
 
@@ -47,27 +50,56 @@ function isSafeReport(report) {
 
     for(let i = 1; i < numOfLevels; i++) {
         const difference = parseInt(levels[i]) - parseInt(levels[i - 1]);
-
-        // If two values are the same then we have an unsafe report
-        if(difference === 0) {
-            return false;
-        }
-
-        if(Math.abs(difference) > 3) {
-            return false;
-        }
-
         let currentDirection = (difference > 0) ? 1 : -1;
-
-        if(direction === 0) {
+         if(direction === 0) {
             // Set the initial direction for the report
             direction = currentDirection;
-        } else if(currentDirection !== direction) {
+        }
+
+        if(difference === 0 || Math.abs(difference) > 3 || currentDirection !== direction) {
+            if(dampener) {
+                return problemDampener(levels);
+            }
+
             return false;
         }
     }
 
     return true;
+}
+
+/**
+ * This function will parse a bad report and then see if it can dampen the report so that it will be considered safe
+ * So we can remove at most ONE level inside each report
+ *
+ * @param {string} report report containing the levels
+ * @param {number} direction direction of the report where 1 is increasing and -1 is decreasing
+ * @param {number} problemIndex Designates which level of the report caused the validation to fail
+ *
+ * @returns {boolean} true if the report is safe and false otherwise
+ */
+function problemDampener(report) {
+    // We know this report is unsafe
+    let result = false;
+    // generate all possible permutations of the dampened report
+    let possibleReports = [];
+    for(let i = 0; i < report.length; i++) {
+        const cReport = report.toSpliced(i, 1);
+        possibleReports.push(cReport)
+    }
+
+    for(const rep of possibleReports) {
+        const reportString = rep.join(" ");
+
+        // Re-run the helper function but DON'T dampen further
+        if(isSafeReport(reportString, false)) {
+            // console.log('dampened:',reportString);
+            result = true;
+            break;
+        }
+    }
+
+    return result;
 }
 
 console.log(checkReports());
