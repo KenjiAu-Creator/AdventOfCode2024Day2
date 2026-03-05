@@ -73,8 +73,6 @@ function isSafeReport(report, dampener = false) {
  * So we can remove at most ONE level inside each report
  *
  * @param {string} report report containing the levels
- * @param {number} direction direction of the report where 1 is increasing and -1 is decreasing
- * @param {number} problemIndex Designates which level of the report caused the validation to fail
  *
  * @returns {boolean} true if the report is safe and false otherwise
  */
