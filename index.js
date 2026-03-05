@@ -8,7 +8,7 @@ import * as fs from 'node:fs';
  * Where m is the number of reports and n is the number of levels in a report
  * Not all reports have the same number of levels.
  *
- * @param {}
+ * @param {string} filePath the relative file path to the data to be parsed for the unusual data.
  *
  * @returns {number} the number of safe reports
  */
@@ -35,7 +35,9 @@ function checkReports(filePath = "./adventDay2Input.txt") {
  *   The levels are either all increasing or all decreasing.
  *   Any two adjacent levels differ by at least one and at most three.
  *
- * @param {string} report string containing numbers of the report indicating the levels
+ * @param {string} report string containing numbers of the report that indicate the levels of the report
+ *
+ * @returns {boolean} Returns true if the report is safe and false otherwise
  */
 function isSafeReport(report) {
     const levels = report.split(" ");
@@ -58,6 +60,7 @@ function isSafeReport(report) {
         let currentDirection = (difference > 0) ? 1 : -1;
 
         if(direction === 0) {
+            // Set the initial direction for the report
             direction = currentDirection;
         } else if(currentDirection !== direction) {
             return false;
